@@ -437,7 +437,7 @@ function createMoon(texture) {
 
 // Try loading NASA texture, fallback to procedural
 loader.load(
-  'https://threejs.org/examples/textures/planets/moon_1024.jpg',
+  'moon.jpg',
   tex => createMoon(tex),
   undefined,
   () => {
@@ -618,7 +618,7 @@ renderer.domElement.addEventListener('mousemove', e => {
   raycaster.setFromCamera(mouse, camera);
   const hits = raycaster.intersectObject(moonMesh);
   if (hits.length > 0) {
-    const { col, row } = getParcelFromIntersect(hits[0].point.clone().applyEuler(new THREE.Euler(-moonMesh.rotation.x, -moonMesh.rotation.y, -moonMesh.rotation.z, 'XYZ')));
+    const { col, row } = getParcelFromIntersect(moonMesh.worldToLocal(hits[0].point.clone()));
     const { code } = parcelName(col, row);
     const id = parcelId(col, row);
     tooltip.style.left = (e.clientX + 14) + 'px';
@@ -661,10 +661,7 @@ function handleClick(e) {
   const hits = raycaster.intersectObject(moonMesh);
   if (hits.length === 0) return;
 
-  const worldPoint = hits[0].point.clone();
-  const localPoint = worldPoint.clone().applyEuler(new THREE.Euler(
-    -moonMesh.rotation.x, -moonMesh.rotation.y, -moonMesh.rotation.z, 'XYZ'
-  ));
+  const localPoint = moonMesh.worldToLocal(hits[0].point.clone());
   const { col, row } = getParcelFromIntersect(localPoint);
   const id = parcelId(col, row);
   const { region, code } = parcelName(col, row);
